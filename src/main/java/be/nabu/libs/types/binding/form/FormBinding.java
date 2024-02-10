@@ -117,18 +117,21 @@ public class FormBinding extends BaseTypeBinding {
 				// the name can contain brackets for lists of complex types
 				String typePath = name.replaceAll("\\[[^\\]]+\\]", "").replace(".", "/");
 				Element<?> target = type.get(typePath);
-				if (target.getType().isList(target.getProperties())) {
-					Integer newIndex = indexes.get(name);
-					if (newIndex == null) {
-						newIndex = 0;
-						indexes.put(name, 1);
+				// if the element does not exist, we assume you are not interested
+				if (target != null) {
+					if (target.getType().isList(target.getProperties())) {
+						Integer newIndex = indexes.get(name);
+						if (newIndex == null) {
+							newIndex = 0;
+							indexes.put(name, 1);
+						}
+						else {
+							indexes.put(name, newIndex + 1);
+						}
+						name += "[" + newIndex + "]";
 					}
-					else {
-						indexes.put(name, newIndex + 1);
-					}
-					name += "[" + newIndex + "]";
+					content.set(name.replace(".", "/"), value);
 				}
-				content.set(name.replace(".", "/"), value);
 			}
 			return content;
 		}
